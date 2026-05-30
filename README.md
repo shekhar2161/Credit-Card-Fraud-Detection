@@ -1,3 +1,5 @@
+<div align="center">
+  
 # 🛡️ FraudSentinel ML Engine
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
@@ -5,9 +7,15 @@
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-Machine%20Learning-orange.svg)](https://scikit-learn.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**FraudSentinel ML Engine** is an end-to-end Machine Learning pipeline designed to detect fraudulent credit card transactions with high precision. 
+**FraudSentinel ML Engine** is an end-to-end Machine Learning pipeline designed to detect fraudulent credit card transactions with high precision.
 
-It features a gorgeous, custom Single Page Application (SPA) dashboard built entirely in HTML, CSS, and Vanilla JavaScript. This frontend communicates seamlessly with a robust **Python Flask Web API**. The backend handles complex operations like IQR (Interquartile Range) noise reduction, SMOTE (Synthetic Minority Over-sampling Technique) for handling highly imbalanced data, and dynamic Scikit-Learn **Random Forest Classifier** model training every time a dataset is uploaded.
+</div>
+
+---
+
+## 📖 Overview
+
+FraudSentinel features a gorgeous, custom Single Page Application (SPA) dashboard built entirely in HTML, CSS, and Vanilla JavaScript. This frontend communicates seamlessly with a robust **Python Flask Web API**. The backend handles complex operations like IQR (Interquartile Range) noise reduction, SMOTE (Synthetic Minority Over-sampling Technique) for handling highly imbalanced data, and dynamic Scikit-Learn **Random Forest Classifier** model training every time a dataset is uploaded.
 
 ---
 
@@ -18,6 +26,36 @@ It features a gorgeous, custom Single Page Application (SPA) dashboard built ent
 - **Robust Outlier Removal:** Interquartile Range (IQR) boundary filtering to protect the model from noisy data.
 - **Dynamic Training:** Trains a high-performance Random Forest Classifier on the fly based on the uploaded data.
 - **High-Performance UI:** Vanilla JavaScript engine that asynchronously uploads massive datasets using `FormData` and streams results to native HTML5 `<canvas>` elements for stunning visual feedback.
+
+---
+
+## 📸 Application Gallery
+
+### 1. Home Page & Dashboard Overview
+![Home Page](screenshots/01_home_page.png)
+
+### 2. Dataset Upload Pipeline
+![Dataset Upload Pipeline](screenshots/02_dataset_upload_pipeline.png)
+
+### 3. Model Performance Metrics
+![Performance Metrics](screenshots/03_performance_metrics.png)
+
+### 4. Transactions Overview
+**All Transactions**
+![All Transactions](screenshots/04_all_transactions.png)
+
+**Fraudulent Transactions**
+![Fraud Transactions](screenshots/05_fraud_transactions.png)
+
+### 5. Manual Live Predictions
+**Legitimate Transaction Prediction**
+![Live Prediction Legitimate](screenshots/06_live_prediction_legitimate.png)
+
+**Fraudulent Transaction Prediction**
+![Live Prediction Fraud](screenshots/07_live_prediction_fraud.png)
+
+### 6. Automated Report Generation
+![Report Download](screenshots/08_report_download.png)
 
 ---
 
@@ -40,8 +78,8 @@ This application is built to run on the Kaggle Credit Card Fraud dataset.
 Clone this repository and install the required dependencies:
 
 ```bash
-git clone https://github.com/yourusername/FraudSentinel.git
-cd FraudSentinel
+git clone https://github.com/shekhar2161/Credit-Card-Fraud-Detection.git
+cd Credit-Card-Fraud-Detection
 pip install -r requirements.txt
 ```
 

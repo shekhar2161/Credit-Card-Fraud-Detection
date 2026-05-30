@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FraudSentinel — ML Detection Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="scanline"></div>
+
+<!-- ═══════════════════════════════════════════
+     LOGIN PAGE
+═══════════════════════════════════════════ -->
+<div id="loginPage">
+  <div class="lg-orbs">
+    <div class="lg-orb lg-orb-1"></div>
+    <div class="lg-orb lg-orb-2"></div>
+  </div>
+  <div class="lg-card">
+    <div class="lg-brand">
+      <div class="lg-shield">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.8">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div class="lg-brand-text">
+        <div class="name">FraudSentinel</div>
+        <div class="tag">ML Detection Engine v2.1</div>
+      </div>
+    </div>
+
+    <div class="lg-heading">
+      <h1>Secure Access</h1>
+      <p>Sign in to access the credit card fraud detection platform powered by internal Python Engine.</p>
+    </div>
+
+    <div class="lg-err" id="lgErr">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Invalid credentials. Please try again.
+    </div>
+
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="lgEmail" placeholder="analyst@bank.com" autocomplete="email"/>
+    </div>
+    <div class="field">
+      <div class="field-hd">
+        <label>Password</label>
+        <span class="field-link" onclick="fillDemo('admin')">Forgot password?</span>
+      </div>
+      <input type="password" id="lgPass" placeholder="••••••••" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') doLogin()"/>
+    </div>
+
+    <button class="lg-btn" onclick="doLogin()">Sign In →</button>
+
+    <div class="lg-demos">
+      <p>Quick demo credentials — click to fill:</p>
+      <div class="demo-pills">
+        <div class="demo-pill" onclick="fillDemo('admin')"><strong>Admin</strong> · admin@fraudsentinel.io</div>
+        <div class="demo-pill" onclick="fillDemo('analyst')"><strong>Analyst</strong> · analyst@bank.com</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MAIN APP
+═══════════════════════════════════════════ -->
+<div id="mainApp">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="tb-brand">FraudSentinel</div>
+        <div class="tb-ver">v2.1 · Built on Python/Flask Backend</div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-status"><div class="tb-dot"></div>API READY</div>
+      <div class="tb-user">
+        <div class="tb-avatar" id="tbAv">A</div>
+        <div class="tb-name" id="tbName">Admin</div>
+      </div>
+      <div class="tb-logout" onclick="doLogout()">Sign Out</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="intro-note">
+      <strong>Pipeline executes inside Python dynamically:</strong> CSV Stream → Handle Missing Values → Scikit-Learn RandomForestClassifier / SMOTE Engine → Classification JSON Return.
+      Upload your <strong>creditcard.csv</strong> to begin the Python API processing.
+    </div>
+
+    <!-- ── 01 UPLOAD ── -->
+    <div class="slabel">01 // Data Ingestion</div>
+    <div class="card mb-32">
+      <div class="card-shine"></div>
+      <div id="errAlert" class="alert alert-err hidden"></div>
+      <div id="upZone" class="up-zone"
+           onclick="document.getElementById('fileInput').click()"
+           ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+        <div class="up-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#456080" stroke-width="1.8">
+            <polyline points="16 16 12 12 8 16"/>
+            <line x1="12" y1="12" x2="12" y2="21"/>
+            <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+          </svg>
+        </div>
+        <div class="up-title">Drop your transaction CSV here</div>
+        <div class="up-sub">
+          Drag &amp; drop or <span onclick="event.stopPropagation();document.getElementById('fileInput').click()">browse files</span><br>
+          Required columns: <strong>V1–V28, Amount, Class</strong>
+        </div>
+        <div id="fileBadge" class="file-badge hidden">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span id="fName">—</span>
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept=".csv" onchange="onFileSelect(event)"/>
+      <div class="btn-row">
+        <button class="btn btn-p" id="runBtn" disabled onclick="runPipeline()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Submit to Python Backend
+        </button>
+        <button class="btn btn-g" style="margin-left:auto" onclick="resetAll()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- ── 02 PIPELINE ── -->
+    <div id="pipeSection" class="hidden">
+      <div class="slabel">02 // ML Pipeline — Internal Server State</div>
+      <div class="card mb-32 fade">
+        <div class="card-shine"></div>
+        <div class="pipeline" id="pipeline">
+          <div class="pipe-step" id="ps0">
+            <div class="pipe-dot">01</div>
+            <div class="pipe-label">Uploading</div>
+          </div>
+          <div class="pipe-step" id="ps1">
+            <div class="pipe-dot">02</div>
+            <div class="pipe-label">Preprocessing</div>
+          </div>
+          <div class="pipe-step" id="ps2">
+            <div class="pipe-dot">03</div>
+            <div class="pipe-label">Python SMOTE Apply</div>
+          </div>
+          <div class="pipe-step" id="ps3">
+            <div class="pipe-dot">04</div>
+            <div class="pipe-label">Scikit RF Fit</div>
+          </div>
+          <div class="pipe-step" id="ps4">
+            <div class="pipe-dot">05</div>
+            <div class="pipe-label">JSON Serialization</div>
+          </div>
+          <div class="pipe-step" id="ps5">
+            <div class="pipe-dot">06</div>
+            <div class="pipe-label">Client Parse</div>
+          </div>
+        </div>
+        <div class="prog-wrap"><div class="prog-bar" id="progBar"></div></div>
+        <div class="terminal" id="terminal"></div>
+      </div>
+    </div>
+
+    <!-- ── 03 RESULTS ── -->
+    <div id="resultsSection" class="hidden">
+
+      <!-- METRICS ROW -->
+      <div class="slabel">03 // Server Performance Metrics</div>
+      <div class="metrics-row mb-24 fade">
+        <div class="metric-card">
+          <div class="m-glow" style="background:var(--accent)"></div>
+          <div class="m-label">Precision</div>
+          <div class="m-value" id="mPrec" style="color:var(--accent)">—</div>
+          <div class="m-sub">Fraud class · Python Evaluation</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-glow" style="background:var(--safe)"></div>
+          <div class="m-label">Recall</div>
+          <div class="m-value" id="mRec" style="color:var(--safe)">—</div>
+          <div class="m-sub">Fraud class · Python Evaluation</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-glow" style="background:var(--warn)"></div>
+          <div class="m-label">F1-Score / AUC-PR</div>
+          <div class="m-value" id="mF1" style="color:var(--warn)">—</div>
+          <div class="m-sub" id="mAuc">PR-AUC: —</div>
+        </div>
+      </div>
+
+      <!-- CHARTS HEADER -->
+      <div class="slabel">// Visualizations</div>
+      <div class="viz-grid2 mb-24 fade">
+        <!-- Fraud Distribution Donut -->
+        <div class="chart-card">
+          <div class="cc-head">
+            <div class="cc-title">// Fraud Detection Distribution</div>
+            <div class="cc-badge" id="distBadge">—</div>
+          </div>
+          <div class="donut-wrap">
+            <canvas id="donutC" width="150" height="150"></canvas>
+            <div class="donut-legend">
+              <div class="leg-item">
+                <div class="leg-dot" style="background:var(--danger)"></div>
+                <span style="color:var(--dim)">Fraud (1)</span>
+                <span class="leg-val" id="lgFraud">—</span>
+                <span class="leg-pct" id="lgFraudPct"></span>
+              </div>
+              <div class="leg-item">
+                <div class="leg-dot" style="background:var(--safe)"></div>
+                <span style="color:var(--dim)">Legitimate (0)</span>
+                <span class="leg-val" id="lgLegit">—</span>
+                <span class="leg-pct" id="lgLegitPct"></span>
+              </div>
+              <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+                <div style="font-size:9px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-bottom:4px">Accuracy</div>
+                <div style="font-family:var(--sans);font-size:28px;font-weight:800;color:var(--warn)" id="mAcc">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confusion Matrix -->
+        <div class="chart-card">
+          <div class="cc-head">
+            <div class="cc-title">// Confusion Matrix</div>
+            <div class="cc-badge">Sklearn Out</div>
+          </div>
+          <canvas id="cmC" style="width:100%;display:block" height="200"></canvas>
+        </div>
+      </div>
+
+      <div class="viz-grid2 mb-24 fade">
+        <div class="chart-card">
+          <div class="cc-head">
+            <div class="cc-title">// Precision-Recall Curve</div>
+            <div class="cc-badge" id="aucBadge">AUC = —</div>
+          </div>
+          <canvas id="prC" style="width:100%;display:block" height="200"></canvas>
+        </div>
+
+        <div class="chart-card">
+          <div class="cc-head">
+            <div class="cc-title">// Fraud Probability Distribution</div>
+            <div class="cc-badge">Histogram</div>
+          </div>
+          <canvas id="histC" style="width:100%;display:block" height="200"></canvas>
+        </div>
+      </div>
+
+      <div class="viz-grid2 mb-24 fade">
+        <div class="chart-card">
+          <div class="cc-head">
+            <div class="cc-title">// Transaction Amount by Range</div>
+            <div class="cc-badge">Fraud vs Legitimate</div>
+          </div>
+          <canvas id="barC" style="width:100%;display:block" height="200"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="cc-head">
+            <div class="cc-title">// Feature Scatter V1 × V3</div>
+            <div class="cc-badge">Red = Fraud · Green = Legit</div>
+          </div>
+          <canvas id="scatterC" style="width:100%;display:block" height="200"></canvas>
+        </div>
+      </div>
+
+      <div class="mb-32 fade">
+        <div class="chart-card">
+          <div class="cc-head">
+            <div class="cc-title">// Fraud Probability — Transaction Timeline</div>
+            <div class="cc-badge">Red dots = Flagged fraud · Yellow line = 50% threshold</div>
+          </div>
+          <canvas id="lineC" style="width:100%;display:block" height="150"></canvas>
+        </div>
+      </div>
+
+      <!-- CLASSIFICATION REPORT -->
+      <div class="slabel">// Classification Report (Python Scikit-Learn output)</div>
+      <div class="mb-32 fade">
+        <div class="report-box" id="classReport">—</div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="slabel">// Prediction Results Table</div>
+      <div class="mb-32 fade">
+        <div class="f-row">
+          <button class="f-btn fa" id="fAll" onclick="setFilter('all')">All Transactions</button>
+          <button class="f-btn" id="fFraud" onclick="setFilter('fraud')">Fraud Only</button>
+          <button class="f-btn" id="fLegit" onclick="setFilter('legit')">Legitimate Only</button>
+          <div style="margin-left:auto;font-size:11px;color:var(--dim);line-height:30px" id="tCount"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Amount ($)</th><th>True Class</th>
+                <th>Prediction</th><th>Probability</th><th>Risk</th>
+              </tr>
+            </thead>
+            <tbody id="tBody"></tbody>
+          </table>
+          <div class="tf">
+            <span id="tInfo"></span>
+            <div class="pag" id="tPag"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANUAL PREDICTION -->
+      <div class="slabel">04 // Manual Live Prediction</div>
+      <div class="card mb-32 fade">
+        <div class="card-shine"></div>
+        <div class="manual-wrap">
+          <div>
+            <div style="font-family:var(--sans);font-size:16px;font-weight:700;color:#000;margin-bottom:20px">Test Transaction Parameters</div>
+            <div class="slider-group">
+              <label>Amount ($) <span>USD</span></label>
+              <input type="number" id="mp_amount" value="150.00" step="0.01">
+            </div>
+            <div class="slider-group">
+              <label>Geographic Distance (Location Risk) <span id="v_loc">0.0</span></label>
+              <input type="range" id="mp_loc" min="-5" max="5" step="0.1" value="0" oninput="document.getElementById('v_loc').textContent=this.value">
+            </div>
+            <div class="slider-group">
+              <label>Behavioral Anomaly Score <span id="v_beh">0.0</span></label>
+              <input type="range" id="mp_behavior" min="-5" max="5" step="0.1" value="0" oninput="document.getElementById('v_beh').textContent=this.value">
+            </div>
+            <div class="slider-group">
+              <label>Device Unfamiliarity <span id="v_dev">0.0</span></label>
+              <input type="range" id="mp_device" min="-5" max="5" step="0.1" value="0" oninput="document.getElementById('v_dev').textContent=this.value">
+            </div>
+            <div class="slider-group">
+              <label>Merchant Trust Score <span id="v_mer">0.0</span></label>
+              <input type="range" id="mp_merchant" min="-5" max="5" step="0.1" value="0" oninput="document.getElementById('v_mer').textContent=this.value">
+            </div>
+            <div class="slider-group">
+              <label>Recent Auth Failures <span id="v_fai">0.0</span></label>
+              <input type="range" id="mp_failed" min="-5" max="5" step="0.1" value="0" oninput="document.getElementById('v_fai').textContent=this.value">
+            </div>
+            <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:10px" onclick="testSingleTxn()">
+               Analyze Transaction
+            </button>
+            <div id="mp_err" style="color:var(--danger);font-size:11px;margin-top:10px;text-align:center" class="hidden"></div>
+          </div>
+          <div>
+            <div class="res-box" id="mp_result">
+               <div class="rb-icon">⏳</div>
+               <div class="rb-title" style="color:var(--text)">Awaiting Input</div>
+               <div class="rb-sub">Configure sliders and run the Python backend evaluation to see the model output here.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPORT -->
+      <div class="slabel">05 // Export Report</div>
+      <div class="exp-grid fade">
+        <div class="exp-card">
+          <div class="exp-title" style="color:var(--accent)">Full Prediction Report</div>
+          <div class="exp-sub">Complete dataset with Prediction and Probability columns attached via Python processing. <span id="dlTotal">—</span> records.</div>
+          <button class="btn btn-p" onclick="dlReport('full')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Full CSV
+          </button>
+        </div>
+        <div class="exp-card">
+          <div class="exp-title" style="color:var(--danger)">Fraud-Only Report</div>
+          <div class="exp-sub">Filtered to <span id="dlFraud">—</span> flagged transactions only. Ready for compliance review.</div>
+          <button class="btn btn-d" onclick="dlReport('fraud')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Download Fraud Report
+          </button>
+        </div>
+      </div>
+    </div><!-- /resultsSection -->
+  </div><!-- /content -->
+</div><!-- /mainApp -->
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
